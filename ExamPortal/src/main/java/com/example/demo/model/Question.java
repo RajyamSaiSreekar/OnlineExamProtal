@@ -36,5 +36,4 @@ public class Question {
 	
 	private int maxMarks;
 	
-	//private String correctAnswer;
 }

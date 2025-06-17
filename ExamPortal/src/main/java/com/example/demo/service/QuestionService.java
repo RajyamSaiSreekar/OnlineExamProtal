@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 import com.example.demo.dto.QuestionDTO;
 import com.example.demo.model.Question;
 import com.example.demo.repository.QuestionRepository;
+import com.example.demo.exception.ResourceNotFoundException; // Import the custom exception
+
 
 @Service
 public class QuestionService {
@@ -29,12 +31,19 @@ public class QuestionService {
 	}
 	
 	public Question getQuestionById(Long id) {
-		return questionRepository.findById(id).orElse(null);
+		// Use orElseThrow to throw custom exception if not found
+		return questionRepository.findById(id)
+				.orElseThrow(() -> new ResourceNotFoundException("Question not found with id: " + id));
 	}
 	
 	public void deleteQuestion(Long questionId) {
+		// Check if question exists before deleting
+		if (!questionRepository.existsById(questionId)) {
+            throw new ResourceNotFoundException("Question not found with id: " + questionId);
+        }
 		questionRepository.deleteById(questionId);
 	}
+	
 	public QuestionDTO convertToDTO(Question question) {
 		   return new QuestionDTO(
 		       question.getQuestionId(),
@@ -45,5 +54,5 @@ public class QuestionService {
 		       question.getDifficulty(),
 		       question.getMaxMarks()
 		   );
-		}
-}	
+	}	   
+}

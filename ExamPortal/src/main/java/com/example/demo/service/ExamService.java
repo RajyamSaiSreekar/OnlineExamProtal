@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.demo.model.Exam;
 import com.example.demo.repository.ExamRepository;
+import com.example.demo.exception.ResourceNotFoundException; // Import the custom exception
 
 @Service
 public class ExamService {
@@ -23,11 +24,17 @@ public class ExamService {
 	}
 	
 	public Exam getExamById(Long id) {
-		return examRepository.findById(id).orElse(null);
+		// Use orElseThrow to throw custom exception if not found
+		return examRepository.findById(id)
+				.orElseThrow(() -> new ResourceNotFoundException("Exam not found with id: " + id));
 	}
 	
 	public void deleteExam(Long examId) {
-		 examRepository.deleteById(examId);
+		// Check if exam exists before deleting to avoid EmptyResultDataAccessException
+		if (!examRepository.existsById(examId)) {
+            throw new ResourceNotFoundException("Exam not found with id: " + examId);
+        }
+		examRepository.deleteById(examId);
 	}
 	
 }

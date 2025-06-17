@@ -12,7 +12,6 @@ public class Response {
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Long responseId;
-	//private Long questionId;
 	private Long userId;
 	
 	@ManyToOne
