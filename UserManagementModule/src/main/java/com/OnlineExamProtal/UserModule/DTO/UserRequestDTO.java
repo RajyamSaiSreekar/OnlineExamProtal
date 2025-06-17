@@ -11,9 +11,7 @@ public class UserRequestDTO {
 	private Long userId;
     private String name;
     private String email;
-    //private String password;
     private Role role;
 
-    // Getters and Setters
 }
 

@@ -7,6 +7,7 @@ import com.OnlineExamProtal.UserModule.Service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -28,7 +29,7 @@ public class UserControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @MockBean
+    @InjectMocks
     private UserService userService;
 
     @Autowired
@@ -38,7 +39,7 @@ public class UserControllerTest {
     @WithMockUser(roles = "ADMIN")
     public void testFindAllUsers() throws Exception {
         List<UserRequestDTO> users = Arrays.asList(new UserRequestDTO(), new UserRequestDTO());
-        when(userService.findAll()).thenReturn(users);
+        when(userService.findAllUsers()).thenReturn(users);
 
         mockMvc.perform(get("/examProtal/userModule/users"))
                 .andExpect(status().isOk())

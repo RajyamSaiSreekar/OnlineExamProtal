@@ -47,7 +47,7 @@ public class UserServiceImpl implements UserService {
 
      //Retrieves all users from the database and converts them to UserRequestDTOs.
     @Override
-    public List<UserRequestDTO> findAll() {
+    public List<UserRequestDTO> findAllUsers() {
         List<User> userList = userRepository.findAll();
         List<UserRequestDTO> dtoList = new ArrayList<>();
 

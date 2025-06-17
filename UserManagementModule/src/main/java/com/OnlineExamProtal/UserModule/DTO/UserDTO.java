@@ -11,6 +11,6 @@ public class UserDTO {
 	    private Long userId;
 	    private String name;
 	    private String email;
-	    private Role role; // Include role
-	    private String token; // To hold the JWT token after login
+	    private Role role; 
+	    private String token;
 }

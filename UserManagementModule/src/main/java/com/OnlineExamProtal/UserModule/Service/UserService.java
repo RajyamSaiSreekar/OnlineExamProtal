@@ -9,10 +9,10 @@ import com.OnlineExamProtal.UserModule.Model.Role;
 import java.util.List;
 
 public interface UserService {
-    List<UserRequestDTO> findAll();
+    List<UserRequestDTO> findAllUsers();
     UserRequestDTO getUserById(Long userId);
     UserDTO registerUser(UserRegistrationDTO dto);
-    UserDTO loginUser(LoginDTO dto); // Modified return type
+    UserDTO loginUser(LoginDTO dto);
     UserDTO updateUser(Long userId, UserRegistrationDTO dto);
     void assignRole(Long userId, Role role);
 }
