@@ -13,6 +13,8 @@ import org.springframework.web.multipart.MultipartFile;
 import com.example.demo.Repository.QuestionBankRepo;
 
 import com.example.demo.Entity.QuestionBank;
+import com.example.demo.Exception.EmptyFileException;
+
 
 @Service
 public class QuestionBankService {
@@ -25,6 +27,43 @@ public class QuestionBankService {
 		return qbRepo.save(q);
 	}
 	
+	public void addMulQues(List<QuestionBank> question) {
+		for(QuestionBank qb:question)
+		{
+			qbRepo.save(qb);
+		}
+	}
+	
+	public void saveQuestionsFromFile(MultipartFile file) throws Exception {
+		BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream()));
+		String line;
+		boolean skipHeader = true;
+		boolean hasData = false;
+		
+		while ((line = reader.readLine()) != null) {
+			if (skipHeader) {
+				skipHeader = false;
+				continue;
+			}
+			
+			String[] data = line.split(",");
+			
+			QuestionBank q = new QuestionBank();
+					q.setText(data[0]);
+					q.setCategory(data[1]);
+					q.setDifficulty(data[2]);
+					q.setOption1(data[3]);
+					q.setOption2(data[4]);
+					q.setCorrectAnswer(data[5]);
+					addQues(q);
+					hasData=true;
+			}
+		if(!hasData)
+		{
+			throw new EmptyFileException("The uploaded file contains only headers and no data rows.");
+		}
+	}
+
 	public List<QuestionBank> getAll()
 	{
 		return qbRepo.findAll();
@@ -33,6 +72,16 @@ public class QuestionBankService {
 	public Optional<QuestionBank> getById(int id)
 	{
 		return qbRepo.findById(id);
+	}
+	
+	public List<QuestionBank> getQuestionByCategory(String category)
+	{
+		return qbRepo.findByCategory(category);
+	}
+	
+	public List<QuestionBank> getQuestionByDifficulty(String difficulty)
+	{
+		return qbRepo.findByDifficulty(difficulty);
 	}
 	
 	public Optional<QuestionBank> update(int id,QuestionBank qb)
@@ -58,48 +107,5 @@ public class QuestionBankService {
 		else {
 			throw new NoSuchElementException("Question with ID "+ id+" not found");
 		}
-	}
-	
-	public List<QuestionBank> getQuestionByCategory(String category)
-	{
-		return qbRepo.findByCategory(category);
-	}
-	
-	public List<QuestionBank> getQuestionByDifficulty(String difficulty)
-	{
-		return qbRepo.findByDifficulty(difficulty);
-	}
-
-	public void addMulQues(List<QuestionBank> question) {
-		for(QuestionBank qb:question)
-		{
-			qbRepo.save(qb);
-		}
-	}
-	
-
-public void saveQuestionsFromFile(MultipartFile file) throws Exception {
-	BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream()));
-	String line;
-	boolean skipHeader = true;
-
-	while ((line = reader.readLine()) != null) {
-		if (skipHeader) {
-			skipHeader = false;
-			continue;
-		}
-
-		String[] data = line.split(",");
-
-		QuestionBank q = new QuestionBank();
-
-				q.setText(data[0]);
-				q.setCategory(data[1]);
-				q.setDifficulty(data[2]);
-				q.setOption1(data[3]);
-				q.setOption2(data[4]);
-				q.setCorrectAnswer(data[5]);
-				addQues(q);
-				}
-	}
+	}	
 }
