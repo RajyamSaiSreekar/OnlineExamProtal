@@ -7,11 +7,15 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.onlineexam.questionbank.dto.QuestionDTO;
 import com.onlineexam.questionbank.entity.Question;
 import com.onlineexam.questionbank.exception.EmptyFileException;
+import com.onlineexam.questionbank.mapper.QuestionMapper;
 import com.onlineexam.questionbank.repository.QuestionRepository;
 
 
@@ -113,5 +117,12 @@ public class QuestionService {
 	public List<Question> getQuestions() {
 		// TODO Auto-generated method stub
 		return qbRepo.findAll();
-	}	
+	}
+
+	public ResponseEntity<QuestionDTO> getQuestionById(Integer id) {
+	    return qbRepo.findById(id)
+	        .map(question -> ResponseEntity.ok(QuestionMapper.toDTO(question)))
+	        .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+	}
+
 }

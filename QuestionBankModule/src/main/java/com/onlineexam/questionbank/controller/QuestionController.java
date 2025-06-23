@@ -27,7 +27,7 @@ import com.onlineexam.questionbank.service.QuestionService;
 
 
 @RestController
-@RequestMapping("/qb")
+@RequestMapping("/api/questionbank/questions")
 public class QuestionController {
 	
 	@Autowired
@@ -182,5 +182,10 @@ public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile fil
 		.toList();
 }
 
+	@GetMapping("/api/questionbank/exams/{examId}/questions/{id}")
+    public ResponseEntity<QuestionDTO> getQuestionById(@PathVariable Integer examId,@PathVariable Integer id) {
+        // Fetch from DB or service
+        return qbService.getQuestionById(id);
+    }
 
 }
