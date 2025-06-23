@@ -53,4 +53,10 @@ public class ExamController {
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
+    
+    @GetMapping("/{id}/exists")
+    public ResponseEntity<Boolean> examExists(@PathVariable Integer id) {
+        // return true/false or throw if not found
+        return ResponseEntity.ok(true); // example
+    }
 }
