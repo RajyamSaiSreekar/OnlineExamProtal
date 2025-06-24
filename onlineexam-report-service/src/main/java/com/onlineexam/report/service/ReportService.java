@@ -2,9 +2,7 @@ package com.onlineexam.report.service;
 
 import com.onlineexam.report.dto.ReportSummaryDTO;
 import com.onlineexam.report.dto.ResponseSummaryDTO;
-import com.onlineexam.report.entity.Exam;
 import com.onlineexam.report.entity.Report;
-import com.onlineexam.report.entity.User;
 import com.onlineexam.report.feignclient.ResponseFeignClient;
 import com.onlineexam.report.repository.ReportRepository;
 import com.onlineexam.report.exception.ResourceNotFoundException; // Import for consistency
@@ -59,15 +57,12 @@ public class ReportService {
             performance = "Fail";
         }
 
-        User user = new User();
-        user.setUserId(userId);
-
-        Exam exam = new Exam();
-        exam.setExamId(examId);
+        
+       
 
         Report report = new Report();
-        report.setUser(user);
-        report.setExam(exam);
+        report.setUserId(userId);
+        report.setExamId(examId);
         report.setTotalMarks(totalMarks);
         report.setPerformanceMetrics(performance);
 
@@ -76,7 +71,7 @@ public class ReportService {
 
 
     public List<ReportSummaryDTO> getReportsByExamId(Integer examId) {
-        List<Report> reports = reportRepository.findByExamExamId(examId);
+        List<Report> reports = reportRepository.findByExamId(examId);
         if (reports.isEmpty()) {
             throw new ResourceNotFoundException("Exam ID not found: " + examId); // Use specific exception
         }
@@ -86,7 +81,7 @@ public class ReportService {
     }
 
     public List<ReportSummaryDTO> getReportsByUserId(Integer userId) {
-        List<Report> reports = reportRepository.findByUserUserId(userId);
+        List<Report> reports = reportRepository.findByUserId(userId);
         if (reports.isEmpty()) {
             throw new ResourceNotFoundException("No reports found for user ID: " + userId); // Use specific exception
         }
@@ -96,7 +91,7 @@ public class ReportService {
     }
 
     public Optional<ReportSummaryDTO> getReportByUserIdAndExamId(Integer userId, Integer examId) {
-        return reportRepository.findByUserUserIdAndExamExamId(userId, examId)
+        return reportRepository.findByUserIdAndExamId(userId, examId)
                 .map(this::mapToDto);
     }
 
@@ -114,8 +109,8 @@ public class ReportService {
     private ReportSummaryDTO mapToDto(Report report) {
         return ReportSummaryDTO.builder()
                 .reportId(report.getReportId())
-                .examId(report.getExam().getExamId())
-                .userId(report.getUser().getUserId())
+                .examId(report.getExamId())
+                .userId(report.getUserId())
                 .totalMarks(report.getTotalMarks())
                 .performanceMetrics(report.getPerformanceMetrics())
                 .build();
@@ -124,7 +119,7 @@ public class ReportService {
 
     public boolean deleteReports(Integer userId, Integer examId) {
         if (userId != null && examId != null) {
-            Optional<Report> report = reportRepository.findByUserUserIdAndExamExamId(userId, examId);
+            Optional<Report> report = reportRepository.findByUserIdAndExamId(userId, examId);
             if (report.isPresent()) {
                 reportRepository.delete(report.get());
                 return true;
@@ -132,7 +127,7 @@ public class ReportService {
                 throw new ResourceNotFoundException("No report found for the given userId and examId."); // Use specific exception
             }
         } else if (userId != null) {
-            List<Report> reports = reportRepository.findByUserUserId(userId);
+            List<Report> reports = reportRepository.findByUserId(userId);
             if (!reports.isEmpty()) {
                 reportRepository.deleteAll(reports);
                 return true;
@@ -140,7 +135,7 @@ public class ReportService {
                 throw new ResourceNotFoundException("No reports found for the given userId."); // Use specific exception
             }
         } else if (examId != null) {
-            List<Report> reports = reportRepository.findByExamExamId(examId);
+            List<Report> reports = reportRepository.findByExamId(examId);
             if (!reports.isEmpty()) {
                 reportRepository.deleteAll(reports);
                 return true;
@@ -169,8 +164,8 @@ public class ReportService {
             Report report = result.get(0);
             ReportSummaryDTO dto = ReportSummaryDTO.builder()
                     .reportId(report.getReportId())
-                    .examId(report.getExam().getExamId())
-                    .userId(report.getUser().getUserId())
+                    .examId(report.getExamId())
+                    .userId(report.getUserId())
                     .totalMarks(report.getTotalMarks())
                     .performanceMetrics(report.getPerformanceMetrics())
                     .build();
@@ -187,7 +182,7 @@ public class ReportService {
         if (!userTotals.isEmpty()) {
             for (int i = 0; i < userTotals.size(); i++) {
                 Report report = userTotals.get(i);
-                if (report.getUser().getUserId().equals(userId)) {
+                if (report.getUserId().equals(userId)) {
                     return i + 1;
                 }
             }

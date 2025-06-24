@@ -9,13 +9,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 
-@FeignClient(name = "onlineexam-response-service") // Name of the Response Microservice registered in Eureka
+@FeignClient(name = "onlineexam-response-service",url="http://localhost:8084/api/exam-management") // Name of the Response Microservice registered in Eureka
 public interface ResponseFeignClient {
 
     // This method will call the Response Microservice's endpoint:
     // GET /api/responses/exam/{examId}/user/{userId}
     // Removed authorizationHeader parameter
-    @GetMapping("/api/responses/exam/{examId}/user/{userId}")
+    @GetMapping("exam/{examId}/user/{userId}")
     ResponseEntity<List<ResponseSummaryDTO>> getResponsesByUserAndExam(
             @PathVariable("userId") Integer userId,
             @PathVariable("examId") Integer examId

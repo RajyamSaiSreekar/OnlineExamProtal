@@ -14,9 +14,9 @@ public interface ReportRepository extends JpaRepository<Report, Integer> {
 	@Query("SELECT r FROM Report r WHERE r.totalMarks = (SELECT MAX(r2.totalMarks) FROM Report r2)")
 	List<Report> findTopperByTotalMarks();
 
-	List<Report> findByExamExamId(Integer examId);
+	List<Report> findByExamId(Integer examId);
 
-	List<Report> findByUserUserId(Integer userId);
+	List<Report> findByUserId(Integer userId);
 
-	Optional<Report> findByUserUserIdAndExamExamId(Integer userId, Integer examId);
+	Optional<Report> findByUserIdAndExamId(Integer userId, Integer examId);
 }

@@ -29,8 +29,8 @@ public class ReportController {
 
         ReportSummaryDTO dto = new ReportSummaryDTO(
                 report.getReportId(),
-                report.getExam().getExamId(),
-                report.getUser().getUserId(),
+                report.getExamId(),
+                report.getUserId(),
                 report.getTotalMarks(),
                 report.getPerformanceMetrics()
         );

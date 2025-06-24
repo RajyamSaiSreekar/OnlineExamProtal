@@ -15,13 +15,10 @@ public class Report {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer reportId;
 
-    @ManyToOne
-    @JoinColumn(name="exam_id",nullable=false)
-    private Exam exam; // Referencing a minimal Exam entity in this service
+    private Integer examId; // Referencing a minimal Exam entity in this service
 
-    @ManyToOne
-    @JoinColumn(name="user_id",nullable=false)
-    private User user; // Referencing a minimal User entity in this service
+   
+    private Integer userId; // Referencing a minimal User entity in this service
 
     private Integer totalMarks;
     private String performanceMetrics;

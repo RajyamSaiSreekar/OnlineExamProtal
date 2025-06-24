@@ -1,5 +1,6 @@
 package com.onlineexam.admin.controller;
 
+import com.onlineexam.admin.client.MappingFeignClient;
 import com.onlineexam.admin.dto.ExamDTO;
 import com.onlineexam.admin.dto.ExamResponseDTO;
 import com.onlineexam.admin.dto.IdResponseDTO;
@@ -18,6 +19,8 @@ import java.util.Optional;
 public class ExamController {
     @Autowired
     private ExamService examService;
+    @Autowired
+    private MappingFeignClient mappingFeignClient;
 
     @PostMapping
     public ResponseEntity<IdResponseDTO> createExam(@Valid @RequestBody ExamDTO examDTO) {
@@ -48,10 +51,23 @@ public class ExamController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteExam(@PathVariable Integer id) {
-        if (examService.deleteExam(id)) {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        try {
+            // First, delete the exam
+        	mappingFeignClient.deleteMappingsByExamId(id);
+            boolean deleted = examService.deleteExam(id);
+
+            if (deleted) {
+                // Then delete exam-question mappings
+                
+                return new ResponseEntity<>(HttpStatus.FOUND);
+            } else {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+
+        } catch (Exception e) {
+            System.err.println("Failed to delete exam or mappings: " + e.getMessage());
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
     
     @GetMapping("/{id}/exists")
