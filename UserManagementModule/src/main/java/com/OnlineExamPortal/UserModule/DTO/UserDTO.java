@@ -8,7 +8,7 @@ import lombok.ToString;
 @Data
 @ToString
 public class UserDTO {
-	    private Long userId;
+		private Integer userId;
 	    private String name;
 	    private String email;
 	    private Role role; 

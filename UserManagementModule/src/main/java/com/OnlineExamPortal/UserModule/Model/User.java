@@ -23,7 +23,7 @@ import lombok.ToString;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long userId;
+    private Integer userId;
 
     @NotBlank(message="Name field must be filled")
     private String name;

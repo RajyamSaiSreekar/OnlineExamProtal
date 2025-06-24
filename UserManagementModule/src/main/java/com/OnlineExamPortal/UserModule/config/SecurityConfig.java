@@ -45,7 +45,7 @@ public class SecurityConfig {
         return http.csrf(csrf -> csrf.disable()) // Disable CSRF protection (common for stateless REST APIs)
                 .authorizeHttpRequests(auth -> auth
                         // Allow unauthenticated access to registration, login, and service token endpoints
-                        .requestMatchers("/examProtal/userModule/register", "/examProtal/userModule/login", "/examProtal/userModule/token/service").permitAll()
+                        .requestMatchers("/examProtal/userModule/register", "/examProtal/userModule/login", "/examProtal/userModule/token/service","examProtal/userModule/{userId}/profile").permitAll()
                         // Allow ADMIN to view all users
                         .requestMatchers("/examProtal/userModule/users","/examProtal/userModule/{id}/role","qb/addQuestion","qb/addMultipleQuestions","qb/uploadFile","qb/getquestion/{id}","qb/getAll","qb/updQuestion/{id}","qb/delQuestion/{id}","qb/getByCategory/{category}","qb/getByDifficulty/{difficulty}","/api/admin/exams/update/{id}","/api/admin/exams/delete/{id}","/api/admin/exams/role/{id}").hasRole("ADMIN")
                         // Allow ADMIN and STUDENT to view their own profile and update
@@ -97,4 +97,7 @@ public class SecurityConfig {
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
+   
+        
+
 }

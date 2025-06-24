@@ -5,6 +5,7 @@ import com.OnlineExamPortal.UserModule.DTO.ServiceTokenRequestDTO;
 import com.OnlineExamPortal.UserModule.DTO.UserDTO;
 import com.OnlineExamPortal.UserModule.DTO.UserRegistrationDTO;
 import com.OnlineExamPortal.UserModule.DTO.UserRequestDTO;
+//import com.OnlineExamPortal.UserModule.DTO.UserResponseDTO;
 import com.OnlineExamPortal.UserModule.Exception.CustomException;
 import com.OnlineExamPortal.UserModule.Model.Role;
 import com.OnlineExamPortal.UserModule.Model.User;
@@ -29,6 +30,7 @@ import java.util.Optional;
  * Implementation of the UserService interface.
  * Contains the business logic for user management, authentication, and authorization.
  */
+
 @Service
 public class UserServiceImpl implements UserService {
 
@@ -55,6 +57,7 @@ public class UserServiceImpl implements UserService {
      * @return UserDTO of the registered user.
      * @throws CustomException if a user with the email already exists or passwords don't match.
      */
+    
     @Transactional
     @Override
     public UserDTO registerUser(UserRegistrationDTO registrationDTO) {
@@ -92,6 +95,7 @@ public class UserServiceImpl implements UserService {
      * @return UserDTO containing the JWT token and user's email.
      * @throws CustomException if authentication fails (e.g., bad credentials).
      */
+    
     @Transactional(readOnly = true)
     @Override
     public UserDTO loginUser(LoginDTO loginDTO) {
@@ -135,6 +139,7 @@ public class UserServiceImpl implements UserService {
      * Retrieves all users from the database and converts them to UserRequestDTOs.
      * @return A list of UserRequestDTOs.
      */
+
     @Transactional(readOnly = true)
     @Override
     public List<UserRequestDTO> findAllUsers() {
@@ -155,9 +160,10 @@ public class UserServiceImpl implements UserService {
      * @return UserRequestDTO of the found user.
      * @throws CustomException if the user is not found.
      */
+    
     @Transactional(readOnly = true)
     @Override
-    public UserRequestDTO getUserById(Long userId) {
+    public UserRequestDTO getUserById(Integer userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException("User not found"));
         return requestToDTO(user);
@@ -170,9 +176,10 @@ public class UserServiceImpl implements UserService {
      * @return UserDTO of the updated user.
      * @throws CustomException if the user is not found.
      */
+    
     @Transactional
     @Override
-    public UserDTO updateUser(Long userId, UserRegistrationDTO dto) {
+    public UserDTO updateUser(Integer userId, UserRegistrationDTO dto) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException("User not found"));
 
@@ -185,16 +192,17 @@ public class UserServiceImpl implements UserService {
 
         return mapToDTO(userRepository.save(user));
     }
-
+	
     /**
      * Assigns a new role to a user. This operation is typically restricted to ADMIN users.
      * @param userId The ID of the user whose role is to be updated.
      * @param role The new role to assign.
      * @throws CustomException if the user is not found.
      */
+    
     @Transactional
     @Override
-    public void assignRole(Long userId, Role role) {
+    public void assignRole(Integer userId, Role role) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException("User not found"));
 
@@ -211,6 +219,7 @@ public class UserServiceImpl implements UserService {
      * @return UserDTO containing the service token.
      * @throws CustomException if client credentials are invalid.
      */
+    
     @Override
     public UserDTO generateServiceToken(ServiceTokenRequestDTO requestDTO) {
         // Hardcoded service client credentials for simplicity. In production, manage these securely.
@@ -252,6 +261,7 @@ public class UserServiceImpl implements UserService {
      * @param user The User entity to convert.
      * @return The corresponding UserDTO.
      */
+    
     private UserDTO mapToDTO(User user) {
         UserDTO dto = new UserDTO();
         dto.setUserId(user.getUserId());
@@ -260,12 +270,13 @@ public class UserServiceImpl implements UserService {
         dto.setRole(user.getRole()); // Include role in UserDTO
         return dto;
     }
-
+	
     /**
      * Helper method to convert a User entity to a UserRequestDTO.
      * @param user The User entity to convert.
      * @return The corresponding UserRequestDTO.
      */
+   
     private UserRequestDTO requestToDTO(User user) {
         UserRequestDTO dto = new UserRequestDTO();
         dto.setUserId(user.getUserId());
@@ -275,4 +286,26 @@ public class UserServiceImpl implements UserService {
         dto.setRole(user.getRole());
         return dto;
     }
+    
+    
+    @Override
+    public UserRequestDTO getUserProfileById(Integer id)
+    {
+    	Optional<User> userOptional = userRepository.findById(id);
+        if (userOptional.isEmpty()) {
+            return null;
+        }
+
+        User user = userOptional.get();
+        // Map User entity to UserResponseDTO
+        return new UserRequestDTO(
+        		user.getUserId(),
+        		user.getName(),
+            user.getEmail(),
+            user.getRole()
+        		);
+    }
+    
+    
 }
+    

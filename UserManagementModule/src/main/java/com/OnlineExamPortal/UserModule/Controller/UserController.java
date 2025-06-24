@@ -1,9 +1,11 @@
+
 package com.OnlineExamPortal.UserModule.Controller;
 
 import com.OnlineExamPortal.UserModule.DTO.LoginDTO;
 import com.OnlineExamPortal.UserModule.DTO.UserDTO;
 import com.OnlineExamPortal.UserModule.DTO.UserRegistrationDTO;
 import com.OnlineExamPortal.UserModule.DTO.UserRequestDTO;
+//import com.OnlineExamPortal.UserModule.DTO.UserResponseDTO;
 import com.OnlineExamPortal.UserModule.Exception.CustomException;
 import com.OnlineExamPortal.UserModule.Model.Role;
 import com.OnlineExamPortal.UserModule.Service.UserService;
@@ -22,6 +24,7 @@ import java.util.Optional;
  * REST Controller for managing User resources.
  * Provides endpoints for user registration, login, profile management, and role assignment.
  */
+
 @RestController // Marks this class as a Spring REST Controller
 @RequestMapping("/examProtal/userModule") // Base path for all endpoints in this controller
 public class UserController {
@@ -39,6 +42,7 @@ public class UserController {
      * @param registrationDTO The DTO containing user registration details.
      * @return ResponseEntity with the registered user's details and 200 OK status.
      */
+    
     @PostMapping("/register") // Maps HTTP POST requests to /examProtal/userModule/register
     public ResponseEntity<UserDTO> registerNewUser(@Valid @RequestBody UserRegistrationDTO registrationDTO) {
         UserDTO registeredUser = userService.registerUser(registrationDTO);
@@ -50,7 +54,9 @@ public class UserController {
      * @param loginDTO The DTO containing user login credentials (email and password).
      * @return ResponseEntity with a JWT token upon successful login and 200 OK status.
      * @throws CustomException if authentication fails (e.g., invalid credentials).
+ 
      */
+    
     @PostMapping("/login") // Maps HTTP POST requests to /examProtal/userModule/login
     public ResponseEntity<UserDTO> loginUser(@RequestBody @Valid LoginDTO loginDTO) {
         UserDTO user = userService.loginUser(loginDTO);
@@ -62,6 +68,7 @@ public class UserController {
      * Only ADMIN can view all users
      * @return ResponseEntity with a list of UserRequestDTOs.
      */
+    
     @GetMapping("/users")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<UserRequestDTO>> findAllUsers() {
@@ -74,12 +81,14 @@ public class UserController {
      * @param id The ID of the user whose profile is to be retrieved.
      * @return ResponseEntity with the user's profile details if found (200 OK), or 404 Not Found if not.
      */
+    
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'STUDENT')")
-    public ResponseEntity<UserRequestDTO> getUserById(@PathVariable Long id) {
+    public ResponseEntity<UserRequestDTO> getUserById(@PathVariable Integer id) {
         UserRequestDTO user = userService.getUserById(id);
         return ResponseEntity.ok(user);
     }
+    
 
     /**
      * EndPoint to update the user profile
@@ -87,9 +96,10 @@ public class UserController {
      * @param dto The DTO containing the updated user details.
      * @return ResponseEntity with the updated user's details and 200 OK status.
      */
+    
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'STUDENT')")
-    public ResponseEntity<UserDTO> updateUser(@PathVariable Long id, @RequestBody @Valid UserRegistrationDTO dto) {
+    public ResponseEntity<UserDTO> updateUser(@PathVariable Integer id, @RequestBody @Valid UserRegistrationDTO dto) {
         UserDTO updatedUser = userService.updateUser(id, dto);
         return ResponseEntity.ok(updatedUser);
     }
@@ -102,10 +112,25 @@ public class UserController {
      * @return ResponseEntity with a success message and 200 OK status.
      * @throws CustomException if the user is not found or the role is invalid.
      */
+    
     @PutMapping("/{id}/role")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<String> assignRoleToUser(@PathVariable Long id, @RequestParam Role role) {
+    public ResponseEntity<String> assignRoleToUser(@PathVariable Integer id, @RequestParam Role role) {
         userService.assignRole(id, role);
         return ResponseEntity.ok("Role Updated Successfully");
+    }
+    /*
+    @GetMapping("/{id}/profile")
+    public ResponseEntity<UserResponseDTO> getUserProfile(@PathVariable("id") Integer id) {
+        UserResponseDTO userProfile = userService.getUserProfileById(id);
+        if (userProfile == null) {
+            throw new CustomException("User not found with ID: " + id);
+        }
+        return ResponseEntity.ok(userProfile);
+    }
+    */
+    @GetMapping("/{id}/profile")
+    public UserRequestDTO getUserProfileById(@PathVariable Integer id) {
+    	return userService.getUserProfileById(id);
     }
 }
