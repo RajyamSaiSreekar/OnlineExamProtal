@@ -19,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.onlineexam.questionbank.dto.QuestionDTO;
 import com.onlineexam.questionbank.dto.QuestionResponseDTO;
 import com.onlineexam.questionbank.entity.Question;
+import com.onlineexam.questionbank.exception.CustomException;
 import com.onlineexam.questionbank.exception.EmptyFileException;
 import com.onlineexam.questionbank.mapper.QuestionMapper;
 import com.onlineexam.questionbank.service.QuestionService;
@@ -27,7 +28,7 @@ import com.onlineexam.questionbank.service.QuestionService;
 
 
 @RestController
-@RequestMapping("/api/questionbank/questions")
+@RequestMapping("/api/questionbank")
 public class QuestionController {
 	
 	@Autowired
@@ -86,7 +87,7 @@ public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile fil
  * @return ResponseEntity<QuestionDTO>
  */
 //@PreAuthorize("hasRole('ADMIN')")
-	@GetMapping("/getquestion/{id}")
+	@GetMapping("/questionById/{id}")
 	public ResponseEntity<QuestionDTO> getQuestionById(@PathVariable int id) {
 		return qbService.getById(id)
 			.map(QuestionMapper::toDTO) //object->QuestionMapper.toDTO(object)
@@ -187,5 +188,15 @@ public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile fil
         // Fetch from DB or service
         return qbService.getQuestionById(id);
     }
+	
+	@GetMapping("/questions/{id}")
+	public ResponseEntity<QuestionDTO> getQuestionById(@PathVariable("id") Integer id) {
+	    QuestionDTO questionDTO = qbService.getQuestionDTOById(id);
+	    if (questionDTO == null) {
+	        throw new CustomException("Question not found with ID: " + id);
+	    }
+	    return ResponseEntity.ok(questionDTO);
+	}
+
 
 }

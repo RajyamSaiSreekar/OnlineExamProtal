@@ -124,5 +124,13 @@ public class QuestionService {
 	        .map(question -> ResponseEntity.ok(QuestionMapper.toDTO(question)))
 	        .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
 	}
+	public Question getQuesById(Integer id) {
+        return qbRepo.findById(id).orElse(null);
+              
+}
 
+	public QuestionDTO getQuestionDTOById(Integer id) {
+		// TODO Auto-generated method stub
+		return qbRepo.findById(id).map(QuestionMapper::toDTO).orElse(null);
+	}
 }
