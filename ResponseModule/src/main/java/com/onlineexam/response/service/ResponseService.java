@@ -232,6 +232,10 @@ public class ResponseService {
             throw new ResourceNotFoundException("Exam not found with ID: " + examId);
         }
         */
+        List<Response> existingResponses = responseRepository.findByUserIdAndExamId(id, examId);
+        if (!existingResponses.isEmpty()) {
+            throw new IllegalStateException("User has already submitted responses for this exam. Re-attempt not allowed.");
+        }
         try {
             ResponseEntity<ExamResponseDTO> examResponse = adminFeignClient.getExamById(examId);
             if (!examResponse.getStatusCode().equals(HttpStatus.OK) || examResponse.getBody() == null) {
@@ -289,5 +293,7 @@ public class ResponseService {
 
         return ResponseEntity.ok(responseSummaries);
     }
+   
+
 
 }

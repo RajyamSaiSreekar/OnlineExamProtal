@@ -20,12 +20,12 @@ import com.onlineexam.response.client.AdminFeignClient; // To call Admin Service
 import com.onlineexam.response.client.QuestionBankFeignClient; // To call Question Bank Service
 import com.onlineexam.response.client.UserFeignClient; // To call User Service
 import com.onlineexam.response.entity.Response; // Local Response entity
+import com.onlineexam.response.repository.ResponseRepository;
 import com.onlineexam.response.DTO.ExamResponseDTO;
 import com.onlineexam.response.DTO.ExamSubmissionDTO;
 import com.onlineexam.response.DTO.QuestionResponseDTO;
 import com.onlineexam.response.DTO.ResponseSummaryDTO;
 import com.onlineexam.response.DTO.UserDTO;
-import com.onlineexam.response.DTO.UserResponseDTO;
 import com.onlineexam.response.Exception.ResourceNotFoundException; // Local exception
 import com.onlineexam.response.service.ExamQuestionMappingService; // To get mapped questions for attempt
 import com.onlineexam.response.service.ResponseService; // To process submissions and fetch responses/results
@@ -53,6 +53,8 @@ public class ExamManagementController {
     @Autowired
     private ExamQuestionMappingService examQuestionMappingService; // To get questions linked to an exam via mapping
 
+    @Autowired
+    private ResponseRepository responseRepository;
     /**
      * Student attempts an exam: Fetches exam details and all mapped questions for a given exam.
      * This endpoint retrieves information necessary for a student to start an exam.
@@ -168,6 +170,20 @@ public class ExamManagementController {
                 ))
                 .collect(Collectors.toList());
         return ResponseEntity.ok(responseSummaryDTOs);
+    }
+    
+    @GetMapping("/exam/{examId}/user/{userId}")
+    public List<Response> getResponsesByUserAndExam(@PathVariable Integer userId,@PathVariable Integer examId) {
+        // Validate exam existence using AdminFeignClient
+        ResponseEntity<ExamResponseDTO> examResponse = adminFeignClient.getExamById(examId);
+        if (!examResponse.getStatusCode().equals(HttpStatus.OK) || examResponse.getBody() == null) {
+            throw new ResourceNotFoundException("Exam not found with ID: " + examId);
+        }
+        List<Response> responses = responseRepository.findByUserIdAndExamId(userId, examId);
+        if (responses.isEmpty()) {
+            throw new ResourceNotFoundException("No responses found for user ID: " + userId + " and exam ID: " + examId);
+        }
+        return responses;
     }
 
     

@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -184,4 +185,14 @@ public class ExamQuestionMappingService {
 			
 			);
     }
+
+	public ResponseEntity<String> deleteMappingsByExamId(Integer examId) {
+		// TODO Auto-generated method stub
+		 List<ExamQuestionMapping> mappings = mappingRepository.findByExamId(examId);
+	        if (mappings.isEmpty()) {
+	            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No mappings found for Exam ID: " + examId);
+	        }
+	        mappingRepository.deleteAll(mappings);
+	        return ResponseEntity.ok("Mappings deleted for Exam ID: " + examId);
+	}
 }

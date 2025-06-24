@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.onlineexam.response.entity.ExamQuestionMapping;
 import com.onlineexam.response.DTO.ExamQuestionMappingDTO;
 import com.onlineexam.response.DTO.IdResponseDTO;
 import com.onlineexam.response.Exception.ResourceNotFoundException;
@@ -105,6 +104,12 @@ public class ExamQuestionMappingController {
     // @PreAuthorize("hasRole('ADMIN')") // Example: Restrict to admins
     public ResponseEntity<Void> deleteMapping(@PathVariable Long mappingId) {
         mappingService.deleteMapping(mappingId);
+        
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+    
+    @DeleteMapping("/exam/{examId}")
+    public ResponseEntity<String> deleteMappingsByExamId(@PathVariable Integer examId) {
+       return mappingService.deleteMappingsByExamId(examId);
     }
 }
