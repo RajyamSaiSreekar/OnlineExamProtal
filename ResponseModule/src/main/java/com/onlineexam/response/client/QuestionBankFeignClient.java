@@ -40,5 +40,8 @@ public interface QuestionBankFeignClient {
     QuestionDTO QuestionById(@PathVariable("id") Integer id);
     
     @GetMapping("/api/questionbank/exams/{examId}/questions/{id}") // Ensure this path matches the QuestionBank Service's QuestionController
-    ResponseEntity<QuestionResponseDTO> getQuestionyId(@PathVariable("examId") Integer examId,@PathVariable("id") Integer id);
+    ResponseEntity<QuestionResponseDTO> getQuestionById(@PathVariable("examId") Integer examId,@PathVariable("id") Integer id);
+
+    @GetMapping("/api/questionbank/questionById/{id}")
+	ResponseEntity<QuestionResponseDTO> getQuesById(@PathVariable("id") Integer questionId);
 }

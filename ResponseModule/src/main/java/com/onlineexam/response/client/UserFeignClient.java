@@ -5,6 +5,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import com.onlineexam.response.DTO.UserDTO;
+//import com.onlineexam.response.DTO.UserDTO;
+//import com.onlineexam.response.DTO.UserResponseDTO;
 import com.onlineexam.response.DTO.UserResponseDTO;
 
 /**
@@ -20,5 +23,8 @@ public interface UserFeignClient {
      * @return ResponseEntity containing UserResponseDTO if found.
      */
     @GetMapping("/examProtal/userModule/{id}/profile") // Ensure this path matches the User Service's UserController
-    ResponseEntity<UserResponseDTO> getUserProfile(@PathVariable("id") Integer id);
+    ResponseEntity<UserDTO> getUserProfile(@PathVariable("id") Integer id);
+    
+
+    
 }

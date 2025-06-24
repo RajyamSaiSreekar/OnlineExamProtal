@@ -20,13 +20,15 @@ import com.onlineexam.response.DTO.ExamSubmissionDTO;
 import com.onlineexam.response.DTO.QuestionResponseDTO;
 import com.onlineexam.response.DTO.QuestionDTO;
 import com.onlineexam.response.DTO.ResponseSummaryDTO;
-
+import com.onlineexam.response.DTO.UserDTO;
 import com.onlineexam.response.entity.Response;
 import com.onlineexam.response.Exception.ResourceNotFoundException;
 //import com.onlineexam.response.repository.ExamRepository;
 //import com.onlineexam.demo.repository.QuestionBankRepo;
 import com.onlineexam.response.repository.ResponseRepository;
 //import com.example.demo.Repository.UserRepository;
+
+import feign.FeignException;
 
 @Service
 public class ResponseService {
@@ -156,6 +158,7 @@ public class ResponseService {
         return ResponseEntity.ok(responseSummaries);
 	}
 	*/
+    /*
     public ResponseEntity<List<ResponseSummaryDTO>> submitExam(Integer examId, ExamSubmissionDTO submissionDTO) {
         List<ResponseSummaryDTO> responseSummaries = new ArrayList<>();
 
@@ -168,7 +171,7 @@ public class ResponseService {
 
         for (AnswerSubmissionDTO ans : submissionDTO.getAnswers()) {
             // Fetch question details from Question Bank Service
-            ResponseEntity<QuestionResponseDTO> questionResponse = questionBankFeignClient.getQuestionyId(ans.getQuestionId());
+            ResponseEntity<QuestionResponseDTO> questionResponse = questionBankFeignClient.getQuesById(ans.getQuestionId());
             if (!questionResponse.getStatusCode().equals(HttpStatus.OK) || questionResponse.getBody() == null) {
                 throw new ResourceNotFoundException("Question not found with ID: " + ans.getQuestionId());
             }
@@ -218,5 +221,73 @@ public class ResponseService {
         }
 
         return ResponseEntity.ok(responseSummaries);
+    }*/
+    public ResponseEntity<List<ResponseSummaryDTO>> submitExam(Integer examId, ExamSubmissionDTO submissionDTO) throws FeignException{
+        List<ResponseSummaryDTO> responseSummaries = new ArrayList<>();
+        Integer id=submissionDTO.getUserId();
+        /*
+        // Fetch exam details from Admin Service
+        ResponseEntity<ExamResponseDTO> examResponse = adminFeignClient.getExamById(examId);
+        if (!examResponse.getStatusCode().equals(HttpStatus.OK) || examResponse.getBody() == null) {
+            throw new ResourceNotFoundException("Exam not found with ID: " + examId);
+        }
+        */
+        try {
+            ResponseEntity<ExamResponseDTO> examResponse = adminFeignClient.getExamById(examId);
+            if (!examResponse.getStatusCode().equals(HttpStatus.OK) || examResponse.getBody() == null) {
+                throw new ResourceNotFoundException("Exam not found with ID: " + examId);
+            }
+        } catch (FeignException.NotFound e) {
+            throw new ResourceNotFoundException("Exam not found with ID: " + examId);
+        }
+
+        try {
+            //ResponseEntity<ExamResponseDTO> examResponse = adminFeignClient.getExamById(examId);
+        	ResponseEntity<UserDTO> userResponse=userFeignClient.getUserProfile(id);
+            if (!userResponse.getStatusCode().equals(HttpStatus.OK) || userResponse.getBody()==null) {
+                throw new ResourceNotFoundException("User not found with ID: " + id);
+            }
+        } catch (FeignException.NotFound e) {
+            throw new ResourceNotFoundException("User not found with ID: " + id);
+        }
+        
+        
+        for (AnswerSubmissionDTO ans : submissionDTO.getAnswers()) {
+            // Fetch question details using simplified Feign client
+            QuestionDTO question = questionBankFeignClient.QuestionById(ans.getQuestionId());
+            if (question == null) {
+                throw new ResourceNotFoundException("Question not found with ID: " + ans.getQuestionId());
+            }
+
+            Response response = new Response();
+            response.setUserId(submissionDTO.getUserId());
+            response.setExamId(examId);
+            response.setQuestionId(ans.getQuestionId());
+            response.setSubmittedAnswer(ans.getSubmittedAnswer());
+
+            // Calculate marks
+            int marks = 0;
+            if (question.getCorrectAnswer() != null &&
+                ans.getSubmittedAnswer() != null &&
+                question.getCorrectAnswer().equalsIgnoreCase(ans.getSubmittedAnswer())) {
+                marks = 2; // Assuming 2 marks for correct answer
+            }
+            response.setMarksObtained(marks);
+
+            // Save the response
+            Response savedResponse = submitResponse(response);
+
+            // Prepare the summary
+            ResponseSummaryDTO summary = new ResponseSummaryDTO(
+                savedResponse.getResponseId(),
+                question.getQuestionId(),
+                ans.getSubmittedAnswer(),
+                marks
+            );
+            responseSummaries.add(summary);
+        }
+
+        return ResponseEntity.ok(responseSummaries);
     }
+
 }

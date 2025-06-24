@@ -24,6 +24,7 @@ import com.onlineexam.response.DTO.ExamResponseDTO;
 import com.onlineexam.response.DTO.ExamSubmissionDTO;
 import com.onlineexam.response.DTO.QuestionResponseDTO;
 import com.onlineexam.response.DTO.ResponseSummaryDTO;
+import com.onlineexam.response.DTO.UserDTO;
 import com.onlineexam.response.DTO.UserResponseDTO;
 import com.onlineexam.response.Exception.ResourceNotFoundException; // Local exception
 import com.onlineexam.response.service.ExamQuestionMappingService; // To get mapped questions for attempt
@@ -95,7 +96,8 @@ public class ExamManagementController {
     @PostMapping("/{examId}/submit")
     // @PreAuthorize("hasRole('STUDENT')") // Example: Restrict to students
     public ResponseEntity<List<ResponseSummaryDTO>> submitExam(@PathVariable Integer examId, @RequestBody ExamSubmissionDTO submissionDTO) {
-        List<ResponseSummaryDTO> results = (List<ResponseSummaryDTO>) responseService.submitExam(examId, submissionDTO);
+    	ResponseEntity<List<ResponseSummaryDTO>> responseEntity = responseService.submitExam(examId, submissionDTO);
+        List<ResponseSummaryDTO> results = responseEntity.getBody(); // extract the list safely
         return ResponseEntity.ok(results);
     }
 
@@ -116,7 +118,7 @@ public class ExamManagementController {
 
             // Fetch user details from User Service
             try {
-                ResponseEntity<UserResponseDTO> userRes = userFeignClient.getUserProfile(response.getUserId());
+                ResponseEntity<UserDTO> userRes = userFeignClient.getUserProfile(response.getUserId());
                 if (userRes.getStatusCode().is2xxSuccessful() && userRes.getBody() != null) {
                     item.put("user", userRes.getBody());
                 } else {
@@ -129,7 +131,7 @@ public class ExamManagementController {
 
             // Fetch question details from Question Bank Service
             try {
-                ResponseEntity<QuestionResponseDTO> questionRes = questionBankFeignClient.getQuestionyId(response.getQuestionId());
+                ResponseEntity<QuestionResponseDTO> questionRes = questionBankFeignClient.getQuesById(response.getQuestionId());
                 if (questionRes.getStatusCode().is2xxSuccessful() && questionRes.getBody() != null) {
                     item.put("question", questionRes.getBody());
                 } else {

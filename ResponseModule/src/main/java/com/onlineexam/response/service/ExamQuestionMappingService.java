@@ -54,7 +54,7 @@ public class ExamQuestionMappingService {
 
         // 2. Validate Question Existence (call Question Bank Service)
         // We call getQuestionById to ensure it's not just a boolean check, but the question actually exists and we can get details if needed.
-        ResponseEntity<QuestionResponseDTO> questionResponse = questionBankFeignClient.getQuestionyId(questionId);
+        ResponseEntity<QuestionResponseDTO> questionResponse = questionBankFeignClient.getQuesById(questionId);
         if (!questionResponse.getStatusCode().is2xxSuccessful() || questionResponse.getBody() == null) {
             throw new ResourceNotFoundException("Question with ID " + questionId + " not found in Question Bank Service. Cannot create mapping.");
         }
@@ -119,7 +119,7 @@ public class ExamQuestionMappingService {
         List<QuestionResponseDTO> questionsForAttempt = new java.util.ArrayList<>();
         for (ExamQuestionMapping mapping : mappings) {
             Integer questionId = mapping.getQuestionId();
-            ResponseEntity<QuestionResponseDTO> questionResponse = questionBankFeignClient.getQuestionyId(questionId);
+            ResponseEntity<QuestionResponseDTO> questionResponse = questionBankFeignClient.getQuesById(questionId);
 
             if (questionResponse.getStatusCode().is2xxSuccessful() && questionResponse.getBody() != null) {
                 QuestionResponseDTO qbQuestion = questionResponse.getBody();

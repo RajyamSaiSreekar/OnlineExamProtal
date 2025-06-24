@@ -11,9 +11,8 @@ import lombok.ToString;
 @ToString
 @AllArgsConstructor
 public class UserDTO {
-	    private Long userId;
+	    private Integer userId;
 	    private String name;
 	    private String email;
 	    private Role role; 
-	    private String token;
 }
